@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { useAppSelector } from '../../../hooks/useAppSelector'
+import { useAppDispatch } from '../../../shared/hooks/useAppDispatch'
+import { useAppSelector } from '../../../shared/hooks/useAppSelector'
 import { switchView } from '../../../store/auth/slice'
 import { forgotPasswordThunk } from '../../../store/auth/action'
 

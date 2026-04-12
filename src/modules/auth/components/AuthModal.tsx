@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { useAppDispatch } from '../../../hooks/useAppDispatch'
-import { useAppSelector } from '../../../hooks/useAppSelector'
+import { useAppDispatch } from '../../../shared/hooks/useAppDispatch'
+import { useAppSelector } from '../../../shared/hooks/useAppSelector'
 import { closeModal, clearMessages } from '../../../store/auth/slice'
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'

@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { axiosClient } from '../../api/axiosClient'
+import { httpClient } from '../../core/api/httpClient'
 import type { AuthTokens, ForgotPasswordPayload, LoginPayload, RegisterPayload } from './type'
 
 function extractMessage(err: unknown, fallback: string): string {
@@ -24,7 +24,7 @@ export const loginThunk = createAsyncThunk<AuthTokens, LoginPayload>(
   'auth/login',
   async (payload, { rejectWithValue }) => {
     try {
-      const { data } = await axiosClient.post<AuthTokens>('/auth/login', payload)
+      const { data } = await httpClient.post<AuthTokens>('/auth/login', payload)
       localStorage.setItem('accessToken', data.accessToken)
       localStorage.setItem('refreshToken', data.refreshToken)
       return data
@@ -38,7 +38,7 @@ export const registerThunk = createAsyncThunk<void, RegisterPayload>(
   'auth/register',
   async (payload, { rejectWithValue }) => {
     try {
-      await axiosClient.post('/auth/register', payload)
+      await httpClient.post('/auth/register', payload)
     } catch (err) {
       return rejectWithValue(extractMessage(err, 'Registration failed'))
     }
@@ -49,7 +49,7 @@ export const forgotPasswordThunk = createAsyncThunk<string, ForgotPasswordPayloa
   'auth/forgotPassword',
   async (payload, { rejectWithValue }) => {
     try {
-      const { data } = await axiosClient.post<{ message: string }>('/auth/forgot-password', payload)
+      const { data } = await httpClient.post<{ message: string }>('/auth/forgot-password', payload)
       return data.message ?? 'If that email exists, you will receive a reset link shortly.'
     } catch (err) {
       return rejectWithValue(extractMessage(err, 'Request failed'))
@@ -59,9 +59,9 @@ export const forgotPasswordThunk = createAsyncThunk<string, ForgotPasswordPayloa
 
 export const logoutThunk = createAsyncThunk<void, void>(
   'auth/logout',
-  async (_, { rejectWithValue }) => {
+  async (_) => {
     try {
-      await axiosClient.post('/auth/logout')
+      await httpClient.post('/auth/logout')
     } catch {
       // Best-effort — always clear local state regardless
     } finally {
@@ -75,7 +75,7 @@ export const refreshThunk = createAsyncThunk<AuthTokens, string>(
   'auth/refresh',
   async (refreshToken, { rejectWithValue }) => {
     try {
-      const { data } = await axiosClient.post<AuthTokens>('/auth/refresh', { refreshToken })
+      const { data } = await httpClient.post<AuthTokens>('/auth/refresh', { refreshToken })
       localStorage.setItem('accessToken', data.accessToken)
       localStorage.setItem('refreshToken', data.refreshToken)
       return data
@@ -89,7 +89,7 @@ export const resendVerificationThunk = createAsyncThunk<string, void>(
   'auth/resendVerification',
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axiosClient.post<{ message: string }>('/auth/resend-verification')
+      const { data } = await httpClient.post<{ message: string }>('/auth/resend-verification')
       return data.message ?? 'Verification email sent.'
     } catch (err) {
       return rejectWithValue(extractMessage(err, 'Failed to resend verification email'))

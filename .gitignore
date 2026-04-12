@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+.claude
+CLAUDE.md
+MEMORY.md
+project_ui_scaffold.md
