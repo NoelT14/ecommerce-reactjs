@@ -13,10 +13,17 @@ export const httpClient = axios.create({
 // ---------------- REQUEST INTERCEPTOR ----------------
 // Çdo request që del nga app kalon këtu
 // Shton automatikisht accessToken në header Authorization
+// Nëse user nuk është i loguar, shton X-Guest-Token për sesionin anonim
+
 httpClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+  const accessToken = localStorage.getItem('accessToken')
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`
+  } else {
+    const guestToken = localStorage.getItem('guestToken')
+    if (guestToken) {
+      config.headers['X-Guest-Token'] = guestToken
+    }
   }
   return config
 })
@@ -47,7 +54,9 @@ httpClient.interceptors.response.use(
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean }
 
     // Nëse nuk është 401 ose është retry i dytë : mos bëj refresh
-    if (error.response?.status !== 401 || originalRequest._retry) {
+    // Nëse nuk ka accessToken, user nuk është i autentikuar — mos u provo refresh
+    const accessToken = localStorage.getItem('accessToken')
+    if (!accessToken || error.response?.status !== 401 || originalRequest._retry) {
       return Promise.reject(error)
     }
 

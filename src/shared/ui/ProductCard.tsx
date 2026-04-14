@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Heart } from 'lucide-react'
+import { Heart, Package } from 'lucide-react'
 import Badge, { stockBadge } from './Badge'
 
 export interface ProductCardData {
@@ -44,7 +44,7 @@ export default function ProductCard({ product, isWishlisted = false, onWishlistT
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-4xl text-gray-300">📦</div>
+          <div className="flex h-full w-full items-center justify-center"><Package className="h-12 w-12 text-gray-300" /></div>
         )}
       </Link>
 

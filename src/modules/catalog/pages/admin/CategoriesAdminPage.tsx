@@ -11,19 +11,23 @@ interface Category {
   children: Category[]
 }
 
-// ─── Mock tree — replace with GET /categories/tree ────────────────────────────
+// ─── Mock tree - replace with GET /categories/tree ────────────────────────────
 const MOCK_TREE: Category[] = [
-  { id: '1', name: 'Electronics', slug: 'electronics', sortOrder: 1, isActive: true, children: [
-    { id: '1a', name: 'Headphones & Audio', slug: 'headphones-audio', sortOrder: 1, isActive: true,  children: [] },
-    { id: '1b', name: 'Computers',          slug: 'computers',        sortOrder: 2, isActive: true,  children: [] },
-    { id: '1c', name: 'Wearables',          slug: 'wearables',        sortOrder: 3, isActive: false, children: [] },
-  ]},
-  { id: '2', name: 'Clothing',    slug: 'clothing',    sortOrder: 2, isActive: true, children: [
-    { id: '2a', name: "Men's",  slug: 'mens',  sortOrder: 1, isActive: true, children: [] },
-    { id: '2b', name: "Women's", slug: 'womens', sortOrder: 2, isActive: true, children: [] },
-  ]},
+  {
+    id: '1', name: 'Electronics', slug: 'electronics', sortOrder: 1, isActive: true, children: [
+      { id: '1a', name: 'Headphones & Audio', slug: 'headphones-audio', sortOrder: 1, isActive: true, children: [] },
+      { id: '1b', name: 'Computers', slug: 'computers', sortOrder: 2, isActive: true, children: [] },
+      { id: '1c', name: 'Wearables', slug: 'wearables', sortOrder: 3, isActive: false, children: [] },
+    ]
+  },
+  {
+    id: '2', name: 'Clothing', slug: 'clothing', sortOrder: 2, isActive: true, children: [
+      { id: '2a', name: "Men's", slug: 'mens', sortOrder: 1, isActive: true, children: [] },
+      { id: '2b', name: "Women's", slug: 'womens', sortOrder: 2, isActive: true, children: [] },
+    ]
+  },
   { id: '3', name: 'Sports', slug: 'sports', sortOrder: 3, isActive: true, children: [] },
-  { id: '4', name: 'Books',  slug: 'books',  sortOrder: 4, isActive: true, children: [] },
+  { id: '4', name: 'Books', slug: 'books', sortOrder: 4, isActive: true, children: [] },
 ]
 
 const EMPTY_FORM = { name: '', slug: '', description: '', imageUrl: '', parentId: '', sortOrder: 0, isActive: true }
@@ -86,8 +90,8 @@ export default function CategoriesAdminPage() {
     setModalOpen(true)
   }
   const handleDelete = (id: string) => {
-    // TODO: dispatch deleteCategoryThunk(id) — DELETE /categories/:id
-    alert(`Delete category ${id} — wire up API call`)
+    // TODO: dispatch deleteCategoryThunk(id) - DELETE /categories/:id
+    alert(`Delete category ${id} - wire up API call`)
   }
   const handleSave = () => {
     // TODO: dispatch createCategoryThunk / updateCategoryThunk

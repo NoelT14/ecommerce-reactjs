@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Pencil, Trash2, Search } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, Package } from 'lucide-react'
 import Badge from '../../../../shared/ui/Badge'
 
 interface Tag {
@@ -10,14 +10,14 @@ interface Tag {
   createdAt: string
 }
 
-// ─── Mock data — replace with GET /tags ──────────────────────────────────────
+// ─── Mock data - replace with GET /tags ──────────────────────────────────────
 const MOCK_TAGS: Tag[] = [
-  { id: '1', name: 'Electronics',   slug: 'electronics',   isActive: true,  createdAt: '2024-01-01' },
-  { id: '2', name: 'Audio',         slug: 'audio',         isActive: true,  createdAt: '2024-01-02' },
-  { id: '3', name: 'New Arrival',   slug: 'new-arrival',   isActive: true,  createdAt: '2024-02-01' },
-  { id: '4', name: 'Best Seller',   slug: 'best-seller',   isActive: true,  createdAt: '2024-02-15' },
-  { id: '5', name: 'On Sale',       slug: 'on-sale',       isActive: true,  createdAt: '2024-03-01' },
-  { id: '6', name: 'Discontinued',  slug: 'discontinued',  isActive: false, createdAt: '2024-01-10' },
+  { id: '1', name: 'Electronics', slug: 'electronics', isActive: true, createdAt: '2024-01-01' },
+  { id: '2', name: 'Audio', slug: 'audio', isActive: true, createdAt: '2024-01-02' },
+  { id: '3', name: 'New Arrival', slug: 'new-arrival', isActive: true, createdAt: '2024-02-01' },
+  { id: '4', name: 'Best Seller', slug: 'best-seller', isActive: true, createdAt: '2024-02-15' },
+  { id: '5', name: 'On Sale', slug: 'on-sale', isActive: true, createdAt: '2024-03-01' },
+  { id: '6', name: 'Discontinued', slug: 'discontinued', isActive: false, createdAt: '2024-01-10' },
 ]
 
 const EMPTY_FORM = { name: '', slug: '', isActive: true }
@@ -134,7 +134,7 @@ export default function TagsAdminPage() {
       {deleteConfirmId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl text-center">
-            <div className="mb-3 text-4xl">🗑️</div>
+            <Trash2 className="mb-3 h-10 w-10 text-red-400" />
             <h2 className="mb-2 text-base font-semibold text-gray-900">Delete this tag?</h2>
             <p className="mb-5 text-sm text-gray-500">Products with this tag will lose the association.</p>
             <div className="flex justify-center gap-2">

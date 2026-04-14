@@ -12,13 +12,10 @@ export interface AuthUser {
   isEmailVerified: boolean
 }
 
-export type ModalView = 'login' | 'register' | 'forgot-password'
-
 export interface AuthState {
   user: AuthUser | null
   tokens: AuthTokens | null
-  isModalOpen: boolean
-  modalView: ModalView
+  guestToken: string | null
   isLoading: boolean
   error: string | null
   successMessage: string | null
@@ -39,3 +36,13 @@ export interface RegisterPayload {
 export interface ForgotPasswordPayload {
   email: string
 }
+
+export interface VerifyEmailPayload {
+  token: string
+}
+
+export interface ResetPasswordPayload {
+  token: string
+  password: string
+}
+

@@ -1,17 +1,13 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Trash2, ShoppingCart } from 'lucide-react'
+import { Trash2, ShoppingCart, Package, Heart } from 'lucide-react'
 import Badge, { stockBadge } from '../../../shared/ui/Badge'
 import Pagination from '../../../shared/ui/Pagination'
 import { SkeletonGrid } from '../../../shared/ui/SkeletonCard'
+import type { AppDispatch, RootState } from '../../../store'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchWishlistThunk, removeFromWishlistThunk } from '../../../store/wishlist/action'
 
-// ─── Mock data — replace with GET /users/wishlist ─────────────────────────────
-const MOCK_WISHLIST = [
-  { id: 'w1', productId: '1', product: { id: '1', name: 'Wireless Noise-Cancelling Headphones', slug: 'wireless-headphones', price: '149.99', salePrice: '119.99', saleStartsAt: '2025-01-01T00:00:00Z', saleEndsAt: '2027-01-01T00:00:00Z', imageUrl: null, stockStatus: 'in_stock' } },
-  { id: 'w2', productId: '3', product: { id: '3', name: 'Ergonomic Office Chair',               slug: 'ergonomic-chair',      price: '399.99', salePrice: null,      saleStartsAt: null,                  saleEndsAt: null,                    imageUrl: null, stockStatus: 'low_stock' } },
-  { id: 'w3', productId: '7', product: { id: '7', name: 'Mechanical Keyboard RGB',              slug: 'mechanical-keyboard',  price: '129.99', salePrice: '99.99',   saleStartsAt: '2025-01-01T00:00:00Z', saleEndsAt: '2027-01-01T00:00:00Z', imageUrl: null, stockStatus: 'in_stock' } },
-  { id: 'w4', productId: '5', product: { id: '5', name: 'Smart Watch Series X',                 slug: 'smart-watch',          price: '249.99', salePrice: null,      saleStartsAt: null,                  saleEndsAt: null,                    imageUrl: null, stockStatus: 'out_of_stock' } },
-]
 
 function isSaleActive(salePrice: string | null, saleStartsAt: string | null, saleEndsAt: string | null) {
   if (!salePrice) return false
@@ -20,13 +16,14 @@ function isSaleActive(salePrice: string | null, saleStartsAt: string | null, sal
 }
 
 export default function WishlistPage() {
-  const [items, setItems] = useState(MOCK_WISHLIST)
-  const [isLoading] = useState(false) // TODO: set true while fetching
 
-  // TODO: replace local operations with API calls:
-  // Remove: DELETE /users/wishlist/:productId
+  const dispatch = useDispatch<AppDispatch>()
+  const { items, isLoading } = useSelector((selector: RootState) => selector.wishlist)
+
+  useEffect(() => { dispatch(fetchWishlistThunk()) }, [dispatch])
+
   const handleRemove = (productId: string) => {
-    setItems((prev) => prev.filter((i) => i.productId !== productId))
+    dispatch(removeFromWishlistThunk(productId))
   }
 
   return (
@@ -44,7 +41,7 @@ export default function WishlistPage() {
         <SkeletonGrid count={4} />
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="mb-4 text-5xl">💝</div>
+          <Heart className="mb-4 h-12 w-12 text-indigo-200" />
           <h3 className="mb-2 text-lg font-semibold text-gray-900">Your wishlist is empty</h3>
           <p className="mb-4 text-sm text-gray-500">Save products you love and come back to them anytime.</p>
           <Link
@@ -64,7 +61,7 @@ export default function WishlistPage() {
               <div key={id} className="flex gap-4 rounded-xl border border-gray-200 bg-white p-4">
                 {/* Thumbnail */}
                 <Link to={`/products/${product.slug}`} className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100 text-3xl text-gray-300 hover:opacity-80">
-                  {product.imageUrl ? <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" /> : '📦'}
+                  {product.imageUrl ? <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" /> : <Package className="h-8 w-8 text-gray-300" />}
                 </Link>
 
                 {/* Info */}

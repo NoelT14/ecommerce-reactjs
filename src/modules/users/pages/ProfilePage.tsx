@@ -1,57 +1,91 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Camera, AlertCircle, CheckCircle } from 'lucide-react'
 import { useAppSelector } from '../../../shared/hooks/useAppSelector'
+import { useAppDispatch } from '../../../shared/hooks/useAppDispatch'
+import type { UserProfile } from '../../../model/user-model'
+import { extractMessage } from '../../../shared/utils/helper'
+import { httpClient } from '../../../core/api/httpClient'
+import { resendVerificationThunk } from '../../../store/auth/action'
 
 const schema = z.object({
   firstName: z.string().min(1, 'Required'),
-  lastName:  z.string().min(1, 'Required'),
-  phone:     z.string().nullable().optional(),
+  lastName: z.string().min(1, 'Required'),
+  phone: z.string().nullable().optional(),
   avatarUrl: z.string().url('Must be a valid URL').nullable().optional().or(z.literal('')),
 })
 
 type FormValues = z.infer<typeof schema>
 
-// ─── Mock profile — replace with GET /users ───────────────────────────────────
-const MOCK_PROFILE = {
-  id: 'uuid-123',
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'john.doe@example.com',
-  phone: '+1 555-0100',
-  avatarUrl: null,
-  role: 1,
-  isEmailVerified: true,
-  createdAt: '2024-03-15T10:00:00Z',
-}
 
 export default function ProfilePage() {
-  const authUser = useAppSelector((s) => s.auth.user)
-  // TODO: fetch full profile via GET /users and store in a profileSlice
-  const profile = MOCK_PROFILE
-  const [saved, setSaved] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useAppDispatch()
+  const authUser = useAppSelector((selector) => selector.auth.user)
 
-  const { register, handleSubmit, formState: { errors, isDirty } } = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      firstName: profile.firstName,
-      lastName:  profile.lastName,
-      phone:     profile.phone,
-      avatarUrl: profile.avatarUrl ?? '',
-    },
-  })
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false)
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null)
+
+  const { register, handleSubmit, reset, formState: { errors, isDirty } } = useForm<FormValues>({ resolver: zodResolver(schema) })
+
+  useEffect(() => {
+    httpClient.get<UserProfile>('/users').then(({ data }) => {
+      setProfile(data)
+      reset({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+        avatarUrl: data.avatarUrl ?? '',
+      })
+    }).catch((error) => setFetchError(extractMessage(error, 'Failed to load profile')))
+  }, [reset])
 
   const onSubmit = async (values: FormValues) => {
-    setIsLoading(true)
-    // TODO: dispatch updateProfileThunk(values) — PATCH /users/profile
-    console.log('Update profile:', values)
-    await new Promise((r) => setTimeout(r, 600))
-    setIsLoading(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const { data } = await httpClient.patch<UserProfile>('/users/profile', values)
+      setProfile(data)
+      reset({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+        avatarUrl: data.avatarUrl ?? '',
+      })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    }
+    catch (err) {
+      setSaveError(extractMessage(err, 'Failed to save profile'))
+    }
+    finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (fetchError) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-600">
+        {fetchError}
+      </div>
+    )
+  }
+
+  if (!profile) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-16 w-16 rounded-full bg-gray-200" />
+          <div className="h-4 w-40 rounded bg-gray-200" />
+          <div className="h-4 w-64 rounded bg-gray-200" />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -83,7 +117,10 @@ export default function ProfilePage() {
         <div className="flex items-center gap-2 bg-yellow-50 px-6 py-3 text-sm text-yellow-700">
           <AlertCircle className="h-4 w-4 shrink-0" />
           Your email is not verified.{' '}
-          <button className="font-medium underline hover:no-underline">
+          <button
+            className="font-medium underline hover:no-underline"
+            onClick={() => dispatch(resendVerificationThunk())}
+          >
             Resend verification email
           </button>
         </div>
@@ -152,13 +189,17 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {saveError && (
+          <p className="mt-3 text-sm text-red-600">{saveError}</p>
+        )}
+
         <div className="mt-6 flex items-center gap-3">
           <button
             type="submit"
-            disabled={!isDirty || isLoading}
+            disabled={!isDirty || isSaving}
             className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
           >
-            {isLoading ? 'Saving…' : 'Save changes'}
+            {isSaving ? 'Saving…' : 'Save changes'}
           </button>
 
           {saved && (

@@ -21,7 +21,7 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
   toys: Gamepad2,
 }
 
-// ─── Mock data — replace with API calls ──────────────────────────────────────
+// ─── Mock data - replace with API calls ──────────────────────────────────────
 const MOCK_CATEGORIES = [
   { id: '1', name: 'Electronics', slug: 'electronics', color: 'bg-blue-50 text-blue-700' },
   { id: '2', name: 'Clothing', slug: 'clothing', color: 'bg-pink-50 text-pink-700' },
@@ -67,7 +67,7 @@ export default function HomePage() {
             <span className="text-yellow-300">Trends</span>
           </h1>
           <p className="mb-8 max-w-md text-indigo-100">
-            Discover thousands of products at unbeatable prices. From electronics to fashion — we've got it all.
+            Discover thousands of products at unbeatable prices. From electronics to fashion - we've got it all.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link to="/products"
@@ -162,7 +162,7 @@ export default function HomePage() {
             <h2 className="text-2xl font-extrabold text-white lg:text-3xl">
               Up to 40% off Electronics
             </h2>
-            <p className="mt-1 text-amber-100">Sale ends soon — don't miss out!</p>
+            <p className="mt-1 text-amber-100">Sale ends soon - don't miss out!</p>
           </div>
           <Link
             to="/categories/electronics"

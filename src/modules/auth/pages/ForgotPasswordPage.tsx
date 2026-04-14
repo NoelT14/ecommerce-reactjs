@@ -12,7 +12,7 @@ export default function ForgotPasswordPage() {
             <span className="text-2xl font-bold">Ecommerce</span>
           </Link>
           <h1 className="text-xl font-semibold text-gray-900">Forgot your password?</h1>
-          <p className="text-sm text-gray-500">No worries — we'll send you a reset link</p>
+          <p className="text-sm text-gray-500">No worries - we'll send you a reset link</p>
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">

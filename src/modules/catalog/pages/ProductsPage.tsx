@@ -6,7 +6,7 @@ import { SkeletonGrid } from '../../../shared/ui/SkeletonCard'
 import Pagination from '../../../shared/ui/Pagination'
 import type { ProductCardData } from '../../../shared/ui/ProductCard'
 
-// Mock data — replace with GET /products
+// Mock data - replace with GET /products
 const MOCK_PRODUCTS: ProductCardData[] = [
   { id: '1', name: 'Wireless Noise-Cancelling Headphones', slug: 'wireless-headphones', price: '149.99', salePrice: '119.99', saleStartsAt: '2025-01-01T00:00:00Z', saleEndsAt: '2027-01-01T00:00:00Z', imageUrl: null, stockStatus: 'in_stock' },
   { id: '2', name: 'Premium Cotton T-Shirt', slug: 'cotton-tshirt', price: '29.99', salePrice: null, saleStartsAt: null, saleEndsAt: null, imageUrl: null, stockStatus: 'in_stock' },
@@ -69,7 +69,7 @@ export default function ProductsPage() {
     return () => clearTimeout(t)
   }, [localSearch]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Simulate loading — remove when wired to API
+  // Simulate loading - remove when wired to API
   useEffect(() => {
     setIsLoading(true)
     // TODO: dispatch fetchProductsThunk({ page, search: searchQuery, categoryId, stockStatus, sort })
@@ -216,7 +216,7 @@ export default function ProductsPage() {
             <SkeletonGrid count={12} />
           ) : products.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="mb-4 text-5xl">🔍</div>
+              <Search className="mb-4 h-12 w-12 text-gray-300" />
               <h3 className="mb-2 text-lg font-semibold text-gray-900">No products found</h3>
               <p className="mb-4 text-sm text-gray-500">Try adjusting your filters or search query.</p>
               <button onClick={clearFilters} className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">

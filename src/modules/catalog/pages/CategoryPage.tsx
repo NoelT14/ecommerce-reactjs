@@ -5,31 +5,31 @@ import { SkeletonGrid } from '../../../shared/ui/SkeletonCard'
 import Pagination from '../../../shared/ui/Pagination'
 import type { ProductCardData } from '../../../shared/ui/ProductCard'
 
-// ─── Mock data — replace with GET /categories/:slug and GET /products?categoryId ──
+// ─── Mock data - replace with GET /categories/:slug and GET /products?categoryId ──
 const MOCK_PRODUCTS: ProductCardData[] = [
   { id: '1', name: 'Wireless Noise-Cancelling Headphones', slug: 'wireless-headphones', price: '149.99', salePrice: '119.99', saleStartsAt: '2025-01-01T00:00:00Z', saleEndsAt: '2027-01-01T00:00:00Z', imageUrl: null, stockStatus: 'in_stock' },
-  { id: '7', name: 'Mechanical Keyboard RGB',              slug: 'mechanical-keyboard',  price: '129.99', salePrice: '99.99',  saleStartsAt: '2025-01-01T00:00:00Z', saleEndsAt: '2027-01-01T00:00:00Z', imageUrl: null, stockStatus: 'in_stock' },
-  { id: '8', name: 'Portable Bluetooth Speaker',           slug: 'bluetooth-speaker',    price: '59.99',  salePrice: null, saleStartsAt: null, saleEndsAt: null, imageUrl: null, stockStatus: 'in_stock' },
-  { id: '5', name: 'Smart Watch Series X',                 slug: 'smart-watch',          price: '249.99', salePrice: null, saleStartsAt: null, saleEndsAt: null, imageUrl: null, stockStatus: 'out_of_stock' },
-  { id: '10', name: 'USB-C Hub 7-in-1',                    slug: 'usb-c-hub',            price: '49.99',  salePrice: '39.99', saleStartsAt: '2025-01-01T00:00:00Z', saleEndsAt: '2027-01-01T00:00:00Z', imageUrl: null, stockStatus: 'in_stock' },
-  { id: '12', name: 'Wireless Charging Pad',               slug: 'charging-pad',         price: '34.99',  salePrice: null, saleStartsAt: null, saleEndsAt: null, imageUrl: null, stockStatus: 'low_stock' },
+  { id: '7', name: 'Mechanical Keyboard RGB', slug: 'mechanical-keyboard', price: '129.99', salePrice: '99.99', saleStartsAt: '2025-01-01T00:00:00Z', saleEndsAt: '2027-01-01T00:00:00Z', imageUrl: null, stockStatus: 'in_stock' },
+  { id: '8', name: 'Portable Bluetooth Speaker', slug: 'bluetooth-speaker', price: '59.99', salePrice: null, saleStartsAt: null, saleEndsAt: null, imageUrl: null, stockStatus: 'in_stock' },
+  { id: '5', name: 'Smart Watch Series X', slug: 'smart-watch', price: '249.99', salePrice: null, saleStartsAt: null, saleEndsAt: null, imageUrl: null, stockStatus: 'out_of_stock' },
+  { id: '10', name: 'USB-C Hub 7-in-1', slug: 'usb-c-hub', price: '49.99', salePrice: '39.99', saleStartsAt: '2025-01-01T00:00:00Z', saleEndsAt: '2027-01-01T00:00:00Z', imageUrl: null, stockStatus: 'in_stock' },
+  { id: '12', name: 'Wireless Charging Pad', slug: 'charging-pad', price: '34.99', salePrice: null, saleStartsAt: null, saleEndsAt: null, imageUrl: null, stockStatus: 'low_stock' },
 ]
 
 // Mock sub-categories for sidebar
 const MOCK_SUBCATEGORIES = [
   { id: '1a', name: 'Headphones & Audio', slug: 'headphones-audio' },
-  { id: '1b', name: 'Computers',          slug: 'computers' },
-  { id: '1c', name: 'Wearables',          slug: 'wearables' },
-  { id: '1d', name: 'Accessories',        slug: 'accessories' },
+  { id: '1b', name: 'Computers', slug: 'computers' },
+  { id: '1c', name: 'Wearables', slug: 'wearables' },
+  { id: '1d', name: 'Accessories', slug: 'accessories' },
 ]
 
 const SLUG_TO_LABEL: Record<string, string> = {
   electronics: 'Electronics',
-  clothing:    'Clothing',
+  clothing: 'Clothing',
   'home-garden': 'Home & Garden',
-  sports:      'Sports',
-  books:       'Books',
-  toys:        'Toys',
+  sports: 'Sports',
+  books: 'Books',
+  toys: 'Toys',
 }
 
 export default function CategoryPage() {

@@ -1,28 +1,18 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { httpClient } from '../../core/api/httpClient'
-import type { AuthTokens, ForgotPasswordPayload, LoginPayload, RegisterPayload } from './type'
+import type {
+  AuthTokens,
+  ForgotPasswordPayload,
+  LoginPayload,
+  RegisterPayload,
+  VerifyEmailPayload,
+  ResetPasswordPayload,
+} from './type'
+import { extractMessage } from '../../shared/utils/helper'
 
-function extractMessage(err: unknown, fallback: string): string {
-  if (
-    err &&
-    typeof err === 'object' &&
-    'response' in err &&
-    err.response &&
-    typeof err.response === 'object' &&
-    'data' in err.response &&
-    err.response.data &&
-    typeof err.response.data === 'object' &&
-    'message' in err.response.data
-  ) {
-    const msg = (err.response.data as { message: unknown }).message
-    return typeof msg === 'string' ? msg : fallback
-  }
-  return fallback
-}
 
-export const loginThunk = createAsyncThunk<AuthTokens, LoginPayload>(
-  'auth/login',
-  async (payload, { rejectWithValue }) => {
+export const loginThunk = createAsyncThunk<AuthTokens, LoginPayload, { rejectValue: string }>(
+  'auth/login', async (payload, { rejectWithValue }) => {
     try {
       const { data } = await httpClient.post<AuthTokens>('/auth/login', payload)
       localStorage.setItem('accessToken', data.accessToken)
@@ -31,39 +21,37 @@ export const loginThunk = createAsyncThunk<AuthTokens, LoginPayload>(
     } catch (err) {
       return rejectWithValue(extractMessage(err, 'Login failed'))
     }
-  },
+  }
 )
 
-export const registerThunk = createAsyncThunk<void, RegisterPayload>(
-  'auth/register',
-  async (payload, { rejectWithValue }) => {
+export const registerThunk = createAsyncThunk<void, RegisterPayload, { rejectValue: string }>(
+  'auth/register', async (payload, { rejectWithValue }) => {
     try {
       await httpClient.post('/auth/register', payload)
     } catch (err) {
       return rejectWithValue(extractMessage(err, 'Registration failed'))
     }
-  },
+  }
 )
 
-export const forgotPasswordThunk = createAsyncThunk<string, ForgotPasswordPayload>(
-  'auth/forgotPassword',
-  async (payload, { rejectWithValue }) => {
+export const forgotPasswordThunk = createAsyncThunk<string, ForgotPasswordPayload, { rejectValue: string }>(
+  'auth/forgot', async (payload, { rejectWithValue }) => {
     try {
       const { data } = await httpClient.post<{ message: string }>('/auth/forgot-password', payload)
       return data.message ?? 'If that email exists, you will receive a reset link shortly.'
     } catch (err) {
       return rejectWithValue(extractMessage(err, 'Request failed'))
     }
-  },
+  }
 )
 
 export const logoutThunk = createAsyncThunk<void, void>(
   'auth/logout',
-  async (_) => {
+  async () => {
     try {
       await httpClient.post('/auth/logout')
     } catch {
-      // Best-effort — always clear local state regardless
+      // Best-effort - always clear local state regardless
     } finally {
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
@@ -71,7 +59,7 @@ export const logoutThunk = createAsyncThunk<void, void>(
   },
 )
 
-export const refreshThunk = createAsyncThunk<AuthTokens, string>(
+export const refreshThunk = createAsyncThunk<AuthTokens, string, { rejectValue: string }>(
   'auth/refresh',
   async (refreshToken, { rejectWithValue }) => {
     try {
@@ -85,7 +73,29 @@ export const refreshThunk = createAsyncThunk<AuthTokens, string>(
   },
 )
 
-export const resendVerificationThunk = createAsyncThunk<string, void>(
+export const verifyEmailThunk = createAsyncThunk<void, VerifyEmailPayload, { rejectValue: string }>(
+  'auth/verifyEmail',
+  async ({ token }, { rejectWithValue }) => {
+    try {
+      await httpClient.get(`/auth/verify-email?token=${encodeURIComponent(token)}`)
+    } catch (err) {
+      return rejectWithValue(extractMessage(err, 'Verification failed. The link may be expired or already used.'))
+    }
+  },
+)
+
+export const resetPasswordThunk = createAsyncThunk<void, ResetPasswordPayload, { rejectValue: string }>(
+  'auth/resetPassword',
+  async (payload, { rejectWithValue }) => {
+    try {
+      await httpClient.post('/auth/reset-password', payload)
+    } catch (err) {
+      return rejectWithValue(extractMessage(err, 'Failed to reset password. The link may be expired.'))
+    }
+  },
+)
+
+export const resendVerificationThunk = createAsyncThunk<string, void, { rejectValue: string }>(
   'auth/resendVerification',
   async (_, { rejectWithValue }) => {
     try {
@@ -95,4 +105,17 @@ export const resendVerificationThunk = createAsyncThunk<string, void>(
       return rejectWithValue(extractMessage(err, 'Failed to resend verification email'))
     }
   },
+)
+
+export const guestTokenThunk = createAsyncThunk<string, void, { rejectValue: string }>(
+  'auth/guestToken',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await httpClient.post<{ guestToken: string }>('/auth/guest-token')
+      localStorage.setItem('guestToken', data.guestToken)
+      return data.guestToken
+    } catch (err) {
+      return rejectWithValue(extractMessage(err, 'Failed to obtain guest token'))
+    }
+  }
 )

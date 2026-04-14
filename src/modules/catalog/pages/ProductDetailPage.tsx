@@ -1,10 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Heart, ChevronRight, Star, Plus, Minus } from 'lucide-react'
+import { Heart, ChevronRight, Star, Plus, Minus, Package } from 'lucide-react'
+import { useDispatch, useSelector } from 'react-redux'
+import type { AppDispatch, RootState } from '../../../store'
+import { addToWishlistThunk, removeFromWishlistThunk } from '../../../store/wishlist/action'
+import { trackProductViewThunk } from '../../../store/recently-viewed/action'
 import Badge, { stockBadge } from '../../../shared/ui/Badge'
 import { SkeletonText } from '../../../shared/ui/SkeletonCard'
 
-// ─── Mock product — replace with GET /products/:slug ──────────────────────────
+// ─── Mock product - replace with GET /products/:slug ──────────────────────────
 const MOCK_PRODUCT = {
   id: '1',
   name: 'Wireless Noise-Cancelling Headphones',
@@ -71,10 +75,20 @@ export default function ProductDetailPage() {
   const product = MOCK_PRODUCT
   const saleActive = isSaleActive(product.saleStartsAt, product.saleEndsAt)
 
+  const dispatch = useDispatch<AppDispatch>()
+  const user = useSelector((s: RootState) => s.auth.user)
+  const wishlistItems = useSelector((s: RootState) => s.wishlist.items)
+  const isWishlisted = wishlistItems.some((i) => i.productId === product.id)
+
+  useEffect(() => {
+    if (user && product.id) {
+      dispatch(trackProductViewThunk(product.id))
+    }
+  }, [product.id, user, dispatch])
+
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null)
   const [qty, setQty] = useState(1)
-  const [isWishlisted, setIsWishlisted] = useState(false)
 
   const { label, variant: stockVariant } = stockBadge(product.stockStatus)
 
@@ -110,7 +124,7 @@ export default function ProductDetailPage() {
             {product.images[selectedImage]?.url ? (
               <img src={product.images[selectedImage].url!} alt={product.images[selectedImage].altText ?? product.name} className="h-full w-full object-cover" />
             ) : (
-              <span className="text-8xl text-gray-300">📦</span>
+              <Package className="h-24 w-24 text-gray-300" />
             )}
           </div>
           {/* Thumbnails */}
@@ -124,7 +138,7 @@ export default function ProductDetailPage() {
                 {img.url ? (
                   <img src={img.url} alt={img.altText ?? ''} className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-xl text-gray-300">📦</span>
+                  <Package className="h-6 w-6 text-gray-300" />
                 )}
               </button>
             ))}
@@ -139,8 +153,11 @@ export default function ProductDetailPage() {
             <button
               aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
               onClick={() => {
-                setIsWishlisted((v) => !v)
-                // TODO: dispatch addToWishlistThunk / removeFromWishlistThunk
+                if (isWishlisted) {
+                  dispatch(removeFromWishlistThunk(product.id))
+                } else {
+                  dispatch(addToWishlistThunk(product.id))
+                }
               }}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gray-200 hover:border-red-200 hover:bg-red-50"
             >
@@ -189,12 +206,12 @@ export default function ProductDetailPage() {
                   return (
                     <button
                       key={v.id}
-                      title={`${colorVal} — ${vLabel}`}
+                      title={`${colorVal} - ${vLabel}`}
                       onClick={() => setSelectedVariantId(v.id)}
                       disabled={v.stockStatus === 'out_of_stock'}
                       className={`flex items-center gap-1.5 rounded-lg border-2 px-3 py-1.5 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${selectedVariantId === v.id
-                          ? 'border-indigo-600 bg-indigo-50 font-medium text-indigo-700'
-                          : 'border-gray-200 text-gray-700 hover:border-gray-400'
+                        ? 'border-indigo-600 bg-indigo-50 font-medium text-indigo-700'
+                        : 'border-gray-200 text-gray-700 hover:border-gray-400'
                         }`}
                     >
                       <span className={`h-4 w-4 rounded-full ${colorCls}`} />
@@ -228,7 +245,7 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Add to cart — placeholder */}
+          {/* Add to cart - placeholder */}
           <button
             disabled={(product.stockStatus as string) === 'out_of_stock'}
             className="flex h-12 w-full items-center justify-center rounded-xl bg-indigo-600 font-semibold text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-300"
@@ -299,7 +316,7 @@ export default function ProductDetailPage() {
             const { label: sLabel, variant: sVariant } = stockBadge(p.stockStatus)
             return (
               <Link key={p.id} to={`/products/${p.slug}`} className="group overflow-hidden rounded-xl border border-gray-200 bg-white hover:shadow-md transition-shadow">
-                <div className="flex aspect-square items-center justify-center bg-gray-100 text-5xl text-gray-300">📦</div>
+                <div className="flex aspect-square items-center justify-center bg-gray-100"><Package className="h-12 w-12 text-gray-300" /></div>
                 <div className="p-3">
                   <p className="line-clamp-2 text-sm font-medium text-gray-900 group-hover:text-indigo-600">{p.name}</p>
                   <div className="mt-1 flex items-baseline gap-2">

@@ -1,31 +1,31 @@
 import { useState } from 'react'
-import { Plus, Search, Pencil, Trash2, Eye } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, Eye, Package } from 'lucide-react'
 import Badge, { stockBadge } from '../../../../shared/ui/Badge'
 import Pagination from '../../../../shared/ui/Pagination'
 
-// ─── Mock data — replace with GET /products (admin, all statuses) ─────────────
+// ─── Mock data - replace with GET /products (admin, all statuses) ─────────────
 const MOCK_PRODUCTS = [
-  { id: '1',  name: 'Wireless Noise-Cancelling Headphones', sku: 'WH-NC-001', price: '149.99', salePrice: '119.99', status: 'published', stockStatus: 'in_stock',     stockQuantity: 23, categoryName: 'Electronics' },
-  { id: '2',  name: 'Premium Cotton T-Shirt',               sku: 'CT-001',    price: '29.99',  salePrice: null,      status: 'published', stockStatus: 'in_stock',     stockQuantity: 150, categoryName: 'Clothing' },
-  { id: '3',  name: 'Ergonomic Office Chair',               sku: 'CH-ERG-01', price: '399.99', salePrice: null,      status: 'published', stockStatus: 'low_stock',    stockQuantity: 5,   categoryName: 'Home' },
-  { id: '4',  name: 'Running Shoes Pro',                    sku: 'SH-RUN-01', price: '89.99',  salePrice: '69.99',  status: 'published', stockStatus: 'in_stock',     stockQuantity: 80,  categoryName: 'Sports' },
-  { id: '5',  name: 'Smart Watch Series X',                 sku: 'SW-X-001',  price: '249.99', salePrice: null,      status: 'published', stockStatus: 'out_of_stock', stockQuantity: 0,   categoryName: 'Electronics' },
-  { id: '6',  name: 'Yoga Mat Premium',                     sku: 'YM-PRE-01', price: '45.00',  salePrice: null,      status: 'draft',     stockStatus: 'in_stock',     stockQuantity: 60,  categoryName: 'Sports' },
-  { id: '7',  name: 'Mechanical Keyboard RGB',              sku: 'KB-RGB-01', price: '129.99', salePrice: '99.99',  status: 'published', stockStatus: 'in_stock',     stockQuantity: 34,  categoryName: 'Electronics' },
-  { id: '8',  name: 'Portable Bluetooth Speaker',           sku: 'SP-BT-001', price: '59.99',  salePrice: null,      status: 'archived',  stockStatus: 'in_stock',     stockQuantity: 12,  categoryName: 'Electronics' },
+  { id: '1', name: 'Wireless Noise-Cancelling Headphones', sku: 'WH-NC-001', price: '149.99', salePrice: '119.99', status: 'published', stockStatus: 'in_stock', stockQuantity: 23, categoryName: 'Electronics' },
+  { id: '2', name: 'Premium Cotton T-Shirt', sku: 'CT-001', price: '29.99', salePrice: null, status: 'published', stockStatus: 'in_stock', stockQuantity: 150, categoryName: 'Clothing' },
+  { id: '3', name: 'Ergonomic Office Chair', sku: 'CH-ERG-01', price: '399.99', salePrice: null, status: 'published', stockStatus: 'low_stock', stockQuantity: 5, categoryName: 'Home' },
+  { id: '4', name: 'Running Shoes Pro', sku: 'SH-RUN-01', price: '89.99', salePrice: '69.99', status: 'published', stockStatus: 'in_stock', stockQuantity: 80, categoryName: 'Sports' },
+  { id: '5', name: 'Smart Watch Series X', sku: 'SW-X-001', price: '249.99', salePrice: null, status: 'published', stockStatus: 'out_of_stock', stockQuantity: 0, categoryName: 'Electronics' },
+  { id: '6', name: 'Yoga Mat Premium', sku: 'YM-PRE-01', price: '45.00', salePrice: null, status: 'draft', stockStatus: 'in_stock', stockQuantity: 60, categoryName: 'Sports' },
+  { id: '7', name: 'Mechanical Keyboard RGB', sku: 'KB-RGB-01', price: '129.99', salePrice: '99.99', status: 'published', stockStatus: 'in_stock', stockQuantity: 34, categoryName: 'Electronics' },
+  { id: '8', name: 'Portable Bluetooth Speaker', sku: 'SP-BT-001', price: '59.99', salePrice: null, status: 'archived', stockStatus: 'in_stock', stockQuantity: 12, categoryName: 'Electronics' },
 ]
 
 const STATUS_COLORS: Record<string, 'green' | 'gray' | 'yellow'> = {
   published: 'green',
-  draft:     'yellow',
-  archived:  'gray',
+  draft: 'yellow',
+  archived: 'gray',
 }
 
 export default function ProductsAdminPage() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
 
-  // TODO: replace with Redux state — GET /products with admin params
+  // TODO: replace with Redux state - GET /products with admin params
   const filtered = MOCK_PRODUCTS.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase())
     const matchStatus = !statusFilter || p.status === statusFilter
@@ -33,8 +33,8 @@ export default function ProductsAdminPage() {
   })
 
   const handleDelete = (id: string) => {
-    // TODO: dispatch deleteProductThunk(id) — DELETE /products/:id
-    alert(`Delete product ${id} — wire up API call here`)
+    // TODO: dispatch deleteProductThunk(id) - DELETE /products/:id
+    alert(`Delete product ${id} - wire up API call here`)
   }
 
   return (
@@ -97,7 +97,7 @@ export default function ProductsAdminPage() {
                   <tr key={p.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-xl text-gray-300">📦</div>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100"><Package className="h-5 w-5 text-gray-300" /></div>
                         <span className="font-medium text-gray-900 line-clamp-1 max-w-[200px]">{p.name}</span>
                       </div>
                     </td>

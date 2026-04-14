@@ -1,36 +1,38 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ShoppingBag, Loader2 } from 'lucide-react'
+import { ShoppingBag, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react'
+import { useAppDispatch } from '../../../shared/hooks/useAppDispatch'
+import { verifyEmailThunk, resendVerificationThunk } from '../../../store/auth/action'
 
 type Status = 'loading' | 'success' | 'error'
 
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
-  const [status, setStatus] = useState<Status>('loading')
-  const [resendEmail, setResendEmail] = useState('')
+  const [status, setStatus] = useState<Status>(token ? 'loading' : 'error')
   const [resendSent, setResendSent] = useState(false)
+  const [resendLoading, setResendLoading] = useState(false)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (!token) {
-      setStatus('error')
-      return
+    if (!token) return
+    dispatch(verifyEmailThunk({ token }))
+      .unwrap()
+      .then(() => setStatus('success'))
+      .catch(() => setStatus('error'))
+  }, [token, dispatch])
+
+  const handleResend = async () => {
+    if (resendLoading) return
+    setResendLoading(true)
+    try {
+      await dispatch(resendVerificationThunk()).unwrap()
+      setResendSent(true)
+    } catch {
+      // keep the button visible so the user can try again
+    } finally {
+      setResendLoading(false)
     }
-
-    // TODO: call GET /auth/verify-email?token=<token>
-    const timer = setTimeout(() => {
-      // Simulate success — remove when wired up
-      setStatus('success')
-    }, 1200)
-
-    return () => clearTimeout(timer)
-  }, [token])
-
-  const handleResend = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!resendEmail) return
-    // TODO: call POST /auth/resend-verification with { email: resendEmail }
-    setResendSent(true)
   }
 
   return (
@@ -53,7 +55,7 @@ export default function VerifyEmailPage() {
 
           {status === 'success' && (
             <div className="flex flex-col items-center gap-4">
-              <div className="text-5xl">✅</div>
+              <CheckCircle2 className="h-14 w-14 text-green-500" />
               <h2 className="text-lg font-semibold text-gray-900">Email verified!</h2>
               <p className="text-sm text-gray-500">Your email has been confirmed. You can now sign in.</p>
               <Link
@@ -67,7 +69,7 @@ export default function VerifyEmailPage() {
 
           {status === 'error' && (
             <div className="flex flex-col items-center gap-4">
-              <div className="text-5xl">⚠️</div>
+              <AlertTriangle className="h-14 w-14 text-amber-500" />
               <h2 className="text-lg font-semibold text-gray-900">Link invalid or expired</h2>
               <p className="text-sm text-gray-500">
                 This verification link has expired or was already used.
@@ -78,22 +80,13 @@ export default function VerifyEmailPage() {
                   A new verification email has been sent!
                 </p>
               ) : (
-                <form onSubmit={handleResend} className="flex w-full flex-col gap-3">
-                  <input
-                    type="email"
-                    required
-                    placeholder="Enter your email"
-                    value={resendEmail}
-                    onChange={(e) => setResendEmail(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-                  />
-                  <button
-                    type="submit"
-                    className="rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
-                  >
-                    Resend verification email
-                  </button>
-                </form>
+                <button
+                  onClick={handleResend}
+                  disabled={resendLoading}
+                  className="rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {resendLoading ? 'Sending…' : 'Resend verification email'}
+                </button>
               )}
             </div>
           )}

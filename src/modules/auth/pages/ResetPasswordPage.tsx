@@ -2,8 +2,10 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ShoppingBag, Eye, EyeOff } from 'lucide-react'
+import { ShoppingBag, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
 import { useState } from 'react'
+import { useAppDispatch } from '../../../shared/hooks/useAppDispatch'
+import { resetPasswordThunk } from '../../../store/auth/action'
 
 const schema = z
   .object({
@@ -23,18 +25,25 @@ export default function ResetPasswordPage() {
   const [showPw, setShowPw] = useState(false)
   const [done, setDone] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const dispatch = useAppDispatch()
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
   })
 
   const onSubmit = async (values: FormValues) => {
+    if (!token) return
     setIsLoading(true)
-    // TODO: dispatch resetPasswordThunk({ token, password: values.password })
-    console.log('Reset password payload:', { token, password: values.password })
-    await new Promise((r) => setTimeout(r, 800)) // remove when wired up
-    setIsLoading(false)
-    setDone(true)
+    setSubmitError(null)
+    try {
+      await dispatch(resetPasswordThunk({ token, password: values.password })).unwrap()
+      setDone(true)
+    } catch (err) {
+      setSubmitError(typeof err === 'string' ? err : 'Something went wrong. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (!token) {
@@ -54,7 +63,7 @@ export default function ResetPasswordPage() {
     return (
       <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-gray-50 px-4">
         <div className="rounded-2xl border border-green-200 bg-white p-8 text-center shadow-sm">
-          <div className="mb-4 text-4xl">✅</div>
+          <CheckCircle2 className="mb-4 h-12 w-12 text-green-500" />
           <h2 className="mb-2 text-lg font-semibold text-gray-900">Password updated!</h2>
           <p className="mb-6 text-sm text-gray-500">You can now sign in with your new password.</p>
           <Link to="/login" className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
@@ -117,6 +126,10 @@ export default function ResetPasswordPage() {
                 <span className="text-xs text-red-600">{errors.confirmPassword.message}</span>
               )}
             </div>
+
+            {submitError && (
+              <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{submitError}</p>
+            )}
 
             <button
               type="submit"

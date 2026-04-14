@@ -4,6 +4,7 @@ import { Search, ShoppingCart, Heart, Menu, X, ChevronDown, LogOut, Settings, Pa
 import { useAppDispatch } from '../../hooks/useAppDispatch'
 import { useAppSelector } from '../../hooks/useAppSelector'
 import { logoutThunk } from '../../../store/auth/action'
+import { ROLE } from '../../constants/role'
 
 const CATEGORIES = [
   { label: 'Electronics', slug: 'electronics' },
@@ -46,7 +47,7 @@ export default function Navbar() {
           Ecommerce
         </Link>
 
-        {/* Category nav — desktop */}
+        {/* Category nav - desktop */}
         <div className="relative hidden md:block">
           <button
             className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
@@ -148,7 +149,7 @@ export default function Navbar() {
                     <Package className="h-4 w-4" /> Recently Viewed
                   </Link>
                   {/* Role 4 = ADMIN */}
-                  {user.role >= 4 && (
+                  {user.role >= ROLE.ADMIN && (
                     <>
                       <hr className="my-1 border-gray-100" />
                       <Link

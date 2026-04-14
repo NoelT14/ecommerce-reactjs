@@ -1,10 +1,11 @@
+import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useAppDispatch } from '../../../shared/hooks/useAppDispatch'
 import { useAppSelector } from '../../../shared/hooks/useAppSelector'
-import { switchView } from '../../../store/auth/slice'
 import { registerThunk, resendVerificationThunk } from '../../../store/auth/action'
+import { useClearAuthMessages } from '../../../shared/hooks/useClearAuthMessages'
 
 const schema = z.object({
   firstName: z.string().min(1, 'First name is required').max(100),
@@ -17,8 +18,9 @@ type FormValues = z.infer<typeof schema>
 
 export default function RegisterForm() {
   const dispatch = useAppDispatch()
-  const isLoading = useAppSelector((s) => s.auth.isLoading)
-  const successMessage = useAppSelector((s) => s.auth.successMessage)
+  const { isLoading, error, successMessage } = useAppSelector((selector) => selector.auth)
+
+  useClearAuthMessages()
 
   const {
     register,
@@ -30,7 +32,6 @@ export default function RegisterForm() {
     dispatch(registerThunk(values))
   }
 
-  // After successful registration show resend button inside the form area
   if (successMessage) {
     return (
       <div className="flex flex-col gap-4 text-center">
@@ -43,13 +44,9 @@ export default function RegisterForm() {
         >
           {isLoading ? 'Sending…' : 'Resend verification email'}
         </button>
-        <button
-          type="button"
-          onClick={() => dispatch(switchView('login'))}
-          className="text-xs text-indigo-600 hover:underline"
-        >
+        <Link to="/login" className="text-xs text-indigo-600 hover:underline">
           Back to login
-        </button>
+        </Link>
       </div>
     )
   }
@@ -122,20 +119,16 @@ export default function RegisterForm() {
         )}
       </div>
 
+      {error && (
+        <span className="text-xs text-red-600">{error}</span>
+      )}
+
       <button
         type="submit"
         disabled={isLoading}
         className="rounded-lg bg-indigo-600 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
       >
         {isLoading ? 'Creating account…' : 'Create account'}
-      </button>
-
-      <button
-        type="button"
-        onClick={() => dispatch(switchView('login'))}
-        className="text-center text-xs text-indigo-600 hover:underline"
-      >
-        Already have an account? Sign in
       </button>
     </form>
   )

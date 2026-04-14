@@ -1,11 +1,11 @@
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useAppDispatch } from '../../../shared/hooks/useAppDispatch'
 import { useAppSelector } from '../../../shared/hooks/useAppSelector'
-import { switchView } from '../../../store/auth/slice'
+import { useAppDispatch } from '../../../shared/hooks/useAppDispatch'
+import { useClearAuthMessages } from '../../../shared/hooks/useClearAuthMessages'
 import { loginThunk } from '../../../store/auth/action'
-
 
 const schema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -16,17 +16,21 @@ type FormValues = z.infer<typeof schema>
 
 export default function LoginForm() {
   const dispatch = useAppDispatch()
-  const isLoading = useAppSelector((s) => s.auth.isLoading)
+  const { error, isLoading } = useAppSelector((selector) => selector.auth)
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) })
+  const navigate = useNavigate()
+  useClearAuthMessages()
 
-  const onSubmit = (values: FormValues) => {
-    dispatch(loginThunk(values))
+  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({ resolver: zodResolver(schema) })
+
+  const onSubmit = async (values: FormValues) => {
+    try {
+      await dispatch(loginThunk(values)).unwrap()
+      navigate('/')
+    }
+    catch { }
   }
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
@@ -62,6 +66,10 @@ export default function LoginForm() {
         )}
       </div>
 
+      {error && (
+        <span className="text-xs text-red-600">{error}</span>
+      )}
+
       <button
         type="submit"
         disabled={isLoading}
@@ -71,12 +79,12 @@ export default function LoginForm() {
       </button>
 
       <div className="flex justify-between text-xs text-indigo-600">
-        <button type="button" onClick={() => dispatch(switchView('register'))}>
+        <Link to="/register" className="hover:underline">
           Create account
-        </button>
-        <button type="button" onClick={() => dispatch(switchView('forgot-password'))}>
+        </Link>
+        <Link to="/forgot-password" className="hover:underline">
           Forgot password?
-        </button>
+        </Link>
       </div>
     </form>
   )

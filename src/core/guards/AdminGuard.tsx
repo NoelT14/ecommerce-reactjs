@@ -1,11 +1,10 @@
 import { Navigate } from 'react-router-dom'
 import { useAppSelector } from '../../shared/hooks/useAppSelector'
+import { ROLE } from '../../shared/constants/role';
 
 interface AdminGuardProps {
   children: React.ReactNode
 }
-
-const ADMIN_ROLE = 4
 
 /**
  * Allows access only to users with role >= ADMIN (4).
@@ -19,7 +18,7 @@ export default function AdminGuard({ children }: AdminGuardProps) {
     return <Navigate to="/login" replace />
   }
 
-  if (user.role < ADMIN_ROLE) {
+  if (user.role < ROLE.ADMIN) {
     return <Navigate to="/403" replace />
   }
 

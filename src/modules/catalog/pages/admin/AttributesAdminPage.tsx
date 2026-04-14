@@ -18,30 +18,38 @@ interface Attribute {
   values: AttributeValue[]
 }
 
-// ─── Mock data — replace with GET /attributes ─────────────────────────────────
+// ─── Mock data - replace with GET /attributes ─────────────────────────────────
 const MOCK_ATTRS: Attribute[] = [
-  { id: '1', name: 'Color', type: 'color', isActive: true, values: [
-    { id: 'v1', value: 'Black', sortOrder: 1 },
-    { id: 'v2', value: 'White', sortOrder: 2 },
-    { id: 'v3', value: 'Navy',  sortOrder: 3 },
-    { id: 'v4', value: 'Red',   sortOrder: 4 },
-  ]},
-  { id: '2', name: 'Size', type: 'size', isActive: true, values: [
-    { id: 'v5', value: 'XS', sortOrder: 1 },
-    { id: 'v6', value: 'S',  sortOrder: 2 },
-    { id: 'v7', value: 'M',  sortOrder: 3 },
-    { id: 'v8', value: 'L',  sortOrder: 4 },
-    { id: 'v9', value: 'XL', sortOrder: 5 },
-  ]},
-  { id: '3', name: 'Storage', type: 'number', isActive: true, values: [
-    { id: 'v10', value: '64GB',  sortOrder: 1 },
-    { id: 'v11', value: '128GB', sortOrder: 2 },
-    { id: 'v12', value: '256GB', sortOrder: 3 },
-  ]},
-  { id: '4', name: 'Material', type: 'text', isActive: false, values: [
-    { id: 'v13', value: 'Cotton',     sortOrder: 1 },
-    { id: 'v14', value: 'Polyester',  sortOrder: 2 },
-  ]},
+  {
+    id: '1', name: 'Color', type: 'color', isActive: true, values: [
+      { id: 'v1', value: 'Black', sortOrder: 1 },
+      { id: 'v2', value: 'White', sortOrder: 2 },
+      { id: 'v3', value: 'Navy', sortOrder: 3 },
+      { id: 'v4', value: 'Red', sortOrder: 4 },
+    ]
+  },
+  {
+    id: '2', name: 'Size', type: 'size', isActive: true, values: [
+      { id: 'v5', value: 'XS', sortOrder: 1 },
+      { id: 'v6', value: 'S', sortOrder: 2 },
+      { id: 'v7', value: 'M', sortOrder: 3 },
+      { id: 'v8', value: 'L', sortOrder: 4 },
+      { id: 'v9', value: 'XL', sortOrder: 5 },
+    ]
+  },
+  {
+    id: '3', name: 'Storage', type: 'number', isActive: true, values: [
+      { id: 'v10', value: '64GB', sortOrder: 1 },
+      { id: 'v11', value: '128GB', sortOrder: 2 },
+      { id: 'v12', value: '256GB', sortOrder: 3 },
+    ]
+  },
+  {
+    id: '4', name: 'Material', type: 'text', isActive: false, values: [
+      { id: 'v13', value: 'Cotton', sortOrder: 1 },
+      { id: 'v14', value: 'Polyester', sortOrder: 2 },
+    ]
+  },
 ]
 
 const TYPE_LABELS: Record<AttributeType, string> = {
@@ -50,7 +58,7 @@ const TYPE_LABELS: Record<AttributeType, string> = {
 
 const COLOR_PREVIEW: Record<string, string> = {
   Black: 'bg-gray-900', White: 'bg-gray-100 border border-gray-300',
-  Navy: 'bg-blue-900',  Red: 'bg-red-600', Blue: 'bg-blue-500', Green: 'bg-green-500',
+  Navy: 'bg-blue-900', Red: 'bg-red-600', Blue: 'bg-blue-500', Green: 'bg-green-500',
 }
 
 function AttributeCard({ attr, onEditAttr, onDeleteAttr }: {

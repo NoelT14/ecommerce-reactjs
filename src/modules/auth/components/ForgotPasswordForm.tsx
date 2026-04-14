@@ -1,11 +1,12 @@
+import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useAppDispatch } from '../../../shared/hooks/useAppDispatch'
 import { useAppSelector } from '../../../shared/hooks/useAppSelector'
-import { switchView } from '../../../store/auth/slice'
+import { clearMessages } from '../../../store/auth/slice'
 import { forgotPasswordThunk } from '../../../store/auth/action'
-
 
 const schema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -15,8 +16,9 @@ type FormValues = z.infer<typeof schema>
 
 export default function ForgotPasswordForm() {
   const dispatch = useAppDispatch()
-  const isLoading = useAppSelector((s) => s.auth.isLoading)
-  const successMessage = useAppSelector((s) => s.auth.successMessage)
+  const { isLoading, error, successMessage } = useAppSelector((s) => s.auth)
+
+  useEffect(() => () => { dispatch(clearMessages()) }, [dispatch])
 
   const {
     register,
@@ -32,13 +34,9 @@ export default function ForgotPasswordForm() {
     return (
       <div className="flex flex-col gap-4 text-center">
         <p className="text-sm text-gray-700">{successMessage}</p>
-        <button
-          type="button"
-          onClick={() => dispatch(switchView('login'))}
-          className="text-xs text-indigo-600 hover:underline"
-        >
+        <Link to="/login" className="text-xs text-indigo-600 hover:underline">
           Back to login
-        </button>
+        </Link>
       </div>
     )
   }
@@ -65,6 +63,10 @@ export default function ForgotPasswordForm() {
         )}
       </div>
 
+      {error && (
+        <span className="text-xs text-red-600">{error}</span>
+      )}
+
       <button
         type="submit"
         disabled={isLoading}
@@ -73,13 +75,9 @@ export default function ForgotPasswordForm() {
         {isLoading ? 'Sending…' : 'Send reset link'}
       </button>
 
-      <button
-        type="button"
-        onClick={() => dispatch(switchView('login'))}
-        className="text-center text-xs text-indigo-600 hover:underline"
-      >
+      <Link to="/login" className="text-center text-xs text-indigo-600 hover:underline">
         Back to login
-      </button>
+      </Link>
     </form>
   )
 }

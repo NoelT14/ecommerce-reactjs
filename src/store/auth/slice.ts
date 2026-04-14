@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
-import type { AuthState, AuthUser, ModalView } from './type'
+import type { AuthState, AuthUser } from './type'
 import {
   loginThunk,
   registerThunk,
@@ -8,9 +7,10 @@ import {
   logoutThunk,
   refreshThunk,
   resendVerificationThunk,
+  guestTokenThunk,
 } from './action'
 
-// Decode JWT payload without a library
+// Decode JWT payload
 function decodeJwtUser(token: string): AuthUser | null {
   try {
     const payloadBase64 = token.split('.')[1]
@@ -38,12 +38,10 @@ const hydratedUser = storedAccessToken ? decodeJwtUser(storedAccessToken) : null
 
 const initialState: AuthState = {
   user: hydratedUser,
-  tokens:
-    storedAccessToken && storedRefreshToken
-      ? { accessToken: storedAccessToken, refreshToken: storedRefreshToken }
-      : null,
-  isModalOpen: false,
-  modalView: 'login',
+  tokens: storedAccessToken && storedRefreshToken
+    ? { accessToken: storedAccessToken, refreshToken: storedRefreshToken }
+    : null,
+  guestToken: localStorage.getItem('guestToken'),
   isLoading: false,
   error: null,
   successMessage: null,
@@ -53,22 +51,6 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    openModal(state, action: PayloadAction<ModalView>) {
-      state.isModalOpen = true
-      state.modalView = action.payload
-      state.error = null
-      state.successMessage = null
-    },
-    closeModal(state) {
-      state.isModalOpen = false
-      state.error = null
-      state.successMessage = null
-    },
-    switchView(state, action: PayloadAction<ModalView>) {
-      state.modalView = action.payload
-      state.error = null
-      state.successMessage = null
-    },
     clearMessages(state) {
       state.error = null
       state.successMessage = null
@@ -93,11 +75,10 @@ const authSlice = createSlice({
         state.isLoading = false
         state.tokens = action.payload
         state.user = decodeJwtUser(action.payload.accessToken)
-        state.isModalOpen = false
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.isLoading = false
-        state.error = action.payload as string
+        state.error = action.payload ?? "Login Failed"
       })
 
     // Register
@@ -113,7 +94,7 @@ const authSlice = createSlice({
       })
       .addCase(registerThunk.rejected, (state, action) => {
         state.isLoading = false
-        state.error = action.payload as string
+        state.error = action.payload ?? 'Something went wrong'
       })
 
     // Forgot password
@@ -128,7 +109,7 @@ const authSlice = createSlice({
       })
       .addCase(forgotPasswordThunk.rejected, (state, action) => {
         state.isLoading = false
-        state.error = action.payload as string
+        state.error = action.payload ?? 'Something went wrong'
       })
 
     // Logout
@@ -160,10 +141,15 @@ const authSlice = createSlice({
       })
       .addCase(resendVerificationThunk.rejected, (state, action) => {
         state.isLoading = false
-        state.error = action.payload as string
+        state.error = action.payload ?? 'Something went wrong'
       })
+
+    // Guest token
+    builder.addCase(guestTokenThunk.fulfilled, (state, action) => {
+      state.guestToken = action.payload
+    })
   },
 })
 
-export const { openModal, closeModal, switchView, clearMessages, logout } = authSlice.actions
+export const { clearMessages, logout } = authSlice.actions
 export default authSlice.reducer
